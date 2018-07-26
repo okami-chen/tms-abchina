@@ -1,0 +1,59 @@
+[
+    {
+        "ruleNo": "067226",
+        "actNo": "999999CXB00067224",
+        "discType": "1",
+        "actType": "B",
+        "cityCode": "289",
+        "longitude": "121.364438",
+        "latitude": "31.226119",
+        "pageNo": "1",
+        "rowsPerPage": "2"
+    },
+    {
+        "status": "success",
+        "result": {
+            "items": [
+                {
+                    "shopName": "线上商户",
+                    "mehSecClsName": "其他",
+                    "distance": "1064674",
+                    "merchPicId": "5723358052eb43718116ffe1f20f89d399000012",
+                    "bizDisName": "其他",
+                    "id": "ad0c3f60-9e96-4011-8ca1-45fb864ca684"
+                }
+            ],
+            "pageNo": "1",
+            "yhDetail": {
+                "nowTimeStamp": "41129",
+                "validCBin": "*",
+                "btnEnabled": false,
+                "validCardType": "1000",
+                "shareEntry": "0",
+                "actPicId": "6023655d66074b5f97a27034eb60748599000012",
+                "drawStatus": "0",
+                "cardBin": null,
+                "anytmRtnFlg": "0",
+                "secKillFlag": "1",
+                "purCshAmt": null,
+                "ruleNo": "067226",
+                "actEdDate": "20180727",
+                "purPntAmt": null,
+                "actStDate": "20180727",
+                "ruleName": "(券)消费挑战赛（第四期）-铂金组（抢兑）",
+                "exprRtnFlg": "0",
+                "actType": "B",
+                "ruleDesc": "活动期间，邀约客户累计消费金额满4万元，即可以6积分抢兑伊莱克斯电饭煲（EGRC260）。",
+                "discType": "1",
+                "remCnt": "600",
+                "appr": "10",
+                "actNo": "999999CXB00067224",
+                "zoneCode": "04",
+                "acquiredCnt": "0",
+                "secKillEdTime": "160000",
+                "secKillStTime": "140000"
+            },
+            "lastPage": "1"
+        }
+    }
+]
