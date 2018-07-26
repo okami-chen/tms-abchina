@@ -25,6 +25,8 @@ class ExchangeCommand extends Command
     protected $description = '农行产品秒杀';
     
     protected $cacheKey = 'abchina:detail:';
+    
+    protected $stop = false;
 
     /**
      * Create a new command instance.
@@ -62,7 +64,7 @@ class ExchangeCommand extends Command
         $sleep  = ($this->option('sleep') ?? 500) * 1000;
         
         if($force){
-            while(true){
+            while(true && !$this->stop){
                 $this->secKill($active, $data);
                 usleep($sleep);
             }
@@ -72,6 +74,11 @@ class ExchangeCommand extends Command
         
     }
     
+    /**
+     * 开始秒杀
+     * @param type $active
+     * @param type $data
+     */
     protected function secKill($active, $data){
         $config = [
             'base_uri'  => 'https://enjoy.abchina.com',
@@ -103,24 +110,40 @@ class ExchangeCommand extends Command
             array_get($result, 'result'),
             
         ];
-        
         logger()->stack(['abchina'])->debug(null, $rows);
-        
         $this->line('时间 : '.$this->getTime());
         $this->line('状态 : '.array_get($result, 'status'));
         $this->line('结果 : '.array_get($result, 'result'));
         $this->line('活动 : '.array_get($result, 'title'));
         $this->line('描述 : '.array_get($result, 'desc'));
+        $this->checkStop($result);
         $this->split();
     }
     
+    /**
+     * 检测是否需要停止脚本
+     * @param type $result
+     */
+    protected function checkStop($result){
+        $isStop = [
+            'noUser'
+        ];
+        $status = array_get($result, 'status');
+        if(in_array($status, $isStop)){
+            $this->stop = true;
+            $this->split();
+            $this->line('检测到[' .$status . ']状态,终止进程');
+        }
+    }
+
+
     protected function split(){
         $this->line('----------------------------------------------');
     }
     
     protected function getTime(){
         list($msec, $sec) = explode(' ', microtime());
-        return (float)sprintf('%.03f', (floatval($msec) + floatval($sec)));
+        return date('Y-m-d H:i:s') .'.'. sprintf('%.03f', (floatval($msec))) * 1000;
     }
     
 }
