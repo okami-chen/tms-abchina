@@ -11,7 +11,8 @@ class AbcChinaServiceProvider extends ServiceProvider
      * @var array
      */
     protected $commands = [
-        
+        __NAMESPACE__.'\Console\Command\MonitorCommand',
+        __NAMESPACE__.'\Console\Command\ExchangeCommand',
     ];
     
     /**
@@ -31,6 +32,6 @@ class AbcChinaServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        
+        $this->commands($this->commands);
     }
 }
