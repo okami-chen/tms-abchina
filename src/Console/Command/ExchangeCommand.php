@@ -15,7 +15,7 @@ class ExchangeCommand extends Command
      */
     protected $signature = 'tms:abchina:exchange 
             {--force= : 强制循环}
-            {--sleep= : 休眠毫秒,默认休眠300毫秒}';
+            {--sleep= : 休眠毫秒,默认休眠500毫秒}';
 
     /**
      * The console command description.
@@ -59,14 +59,11 @@ class ExchangeCommand extends Command
         }
         
         $force  = $this->option('force') ?? false;
-        $sleep  = $this->option('sleep') ?? 300;
+        $sleep  = ($this->option('sleep') ?? 500) * 1000;
         
         if($force){
             while(true){
                 $this->secKill($active, $data);
-                list($msec, $sec) = explode(' ', microtime());
-                $mtime =  (float)sprintf('%.06f', (floatval($msec) + floatval($sec)));
-                $this->line($mtime);
                 usleep($sleep);
             }
         }else{
@@ -91,9 +88,6 @@ class ExchangeCommand extends Command
                 "actType"=> array_get($active, 'yhDetail.actType'),
                 "appr"=> array_get($active, 'yhDetail.appr'),
             ],
-//            'curl'  => [
-//                CURLOPT_COOKIE  => config('abchina:cookie')
-//            ]
         ];
         $response   = $client->post('/yh-web/customer/giftTokenDraw', $option);
         $result     = json_decode($response->getBody()->getContents(), true);
@@ -104,25 +98,29 @@ class ExchangeCommand extends Command
             '状态','结果','活动','描述'
         ];
         $rows   = [
+            $this->getTime(),
             array_get($result, 'status'),
             array_get($result, 'result'),
-            array_get($result, 'title'),
-            array_get($result, 'desc')
             
         ];
         
-//        $this->table($headers, $rows);
+        logger()->stack(['abchina'])->debug(null, $rows);
         
+        $this->line('时间 : '.$this->getTime());
         $this->line('状态 : '.array_get($result, 'status'));
         $this->line('结果 : '.array_get($result, 'result'));
         $this->line('活动 : '.array_get($result, 'title'));
         $this->line('描述 : '.array_get($result, 'desc'));
-        
         $this->split();
     }
     
     protected function split(){
         $this->line('----------------------------------------------');
+    }
+    
+    protected function getTime(){
+        list($msec, $sec) = explode(' ', microtime());
+        return (float)sprintf('%.03f', (floatval($msec) + floatval($sec)));
     }
     
 }
