@@ -52,18 +52,16 @@ class ExchangeCommand extends Command
         
         $data   = json_decode($now, true);
         $name   = $this->cacheKey.$data['actPicId'];
-        $ret    = ConfigModel::where(['name'=>$name])->first();
-        if(!$ret){
+        $active    = cache()->get($name);
+        if(!$active){
             $this->error('未找到活动详情');
             return true;
         }
         
-        $active = json_decode($ret->value, true);
-        $force  = $this->option('force');
+        $force  = $this->option('force') ?? false;
         $sleep  = $this->option('sleep') ?? 300;
         
         if($force){
-            
             while(true){
                 $this->secKill($active, $data);
                 list($msec, $sec) = explode(' ', microtime());

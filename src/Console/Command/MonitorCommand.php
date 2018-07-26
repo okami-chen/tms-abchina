@@ -81,16 +81,6 @@ class MonitorCommand extends Command
         $result     = json_decode($response->getBody()->getContents(), true);
         $name       = 'abchina:detail:'. array_get($result, 'result.yhDetail.actPicId');
         cache()->put($name, $result['result'], 3600);
-        $ret    = ConfigModel::where('name', $name)->first();
-        if($ret){
-            return $result['result'];
-        }
-        $model  = new ConfigModel();
-        $model->forceFill([
-            'name'  => $name,
-            'value' => json_encode($result['result'], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
-        ]);
-        $model->save();
         return $result['result'];
     }
 
@@ -141,18 +131,6 @@ class MonitorCommand extends Command
                 $active['ruleName'],
                 $time
             ];
-
-            
-            $ret = ConfigModel::where(['name'=>$name])->first();
-            if($ret){
-                continue;
-            }
-            $model  = new ConfigModel();
-            $model->forceFill([
-                'name'  => $name,
-                'value' => json_encode($active, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
-            ]);
-            $model->save();
         }
         $this->table($headers, $rows);
         return $actives;
