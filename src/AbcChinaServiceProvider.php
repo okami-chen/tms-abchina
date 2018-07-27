@@ -3,6 +3,8 @@
 namespace OkamiChen\TmsAbchina;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Route;
 
 class AbcChinaServiceProvider extends ServiceProvider
 {
@@ -22,7 +24,7 @@ class AbcChinaServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
+        $this->registerRoute();
     }
 
     /**
@@ -33,5 +35,17 @@ class AbcChinaServiceProvider extends ServiceProvider
     public function register()
     {
         $this->commands($this->commands);
+    }
+    
+    protected function registerRoute(){
+        $attributes = [
+            'prefix'     => '/yh-web/',
+            'namespace'  => __NAMESPACE__.'\Controller',
+            'middleware' => 'web',
+        ];
+        Route::group($attributes, function (Router $router) {
+            $router->any('/jedis/resetSessionExpire', 'AbchinaController@doSession');
+        });
+        
     }
 }
