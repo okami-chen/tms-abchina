@@ -7,9 +7,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use OkamiChen\TmsAbchina\Event\ActiveFind;
 
-class ActiveFindListener implements ShouldQueue
+class ActiveFindListener
 {
-    use InteractsWithQueue;
     
     /**
      * Create the event listener.
@@ -29,7 +28,7 @@ class ActiveFindListener implements ShouldQueue
      */
     public function handle(ActiveFind $event)
     {
-        $this->setCache($event->getRaw());
+        //$this->setCache($event->getRaw());
     }
     
     protected function setCache($active){

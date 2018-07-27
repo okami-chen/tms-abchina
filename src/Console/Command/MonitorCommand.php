@@ -90,8 +90,6 @@ class MonitorCommand extends Command
             event(new ActiveFind($active));
             
             $this->active[] = $active;
-            $name   = 'abchina:active:'.$active['actNo'];
-            cache()->put($name, $active, 3600);
 
             $detail = $this->getActiveDetail($active['ruleNo'], $active['actNo'], $active['actType'], $active['discType']);
             $time   = 
@@ -137,9 +135,7 @@ class MonitorCommand extends Command
         $result     = json_decode($response->getBody()->getContents(), true);
         
         event(new ActiveDetail($result['result']));
-        
-        $name       = 'abchina:detail:'. array_get($result, 'result.yhDetail.actNo');
-        cache()->put($name, $result['result'], 3600);
+
         return $result['result'];
     }
     

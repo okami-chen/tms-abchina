@@ -33,7 +33,7 @@ class ActiveDetailListener implements ShouldQueue
     }
     
     protected function setCache($active){
-        $name   = 'abchina:detail:'.$active['actNo'];
+        $name   = 'abchina:detail:'.$active['yhDetail']['actNo'];
         cache()->put($name, $active, 3600);
     }
 }
