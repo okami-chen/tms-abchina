@@ -53,7 +53,7 @@ class ExchangeCommand extends Command
         }
         
         $data   = json_decode($now, true);
-        $name   = $this->cacheKey.$data['actPicId'];
+        $name   = $this->cacheKey.$data['actNo'];
         $active    = cache()->get($name);
         if(!$active){
             $this->error('未找到活动详情');

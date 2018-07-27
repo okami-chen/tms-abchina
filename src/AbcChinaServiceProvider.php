@@ -5,6 +5,11 @@ namespace OkamiChen\TmsAbchina;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Event;
+use OkamiChen\TmsAbchina\Event\ActiveDetail;
+use OkamiChen\TmsAbchina\Event\ActiveFind;
+use OkamiChen\TmsAbchina\Listener\ActiveFindListener;
+use OkamiChen\TmsAbchina\Listener\ActiveDetailListener;
 
 class AbcChinaServiceProvider extends ServiceProvider
 {
@@ -17,6 +22,17 @@ class AbcChinaServiceProvider extends ServiceProvider
         __NAMESPACE__.'\Console\Command\ExchangeCommand',
     ];
     
+    protected $listens  = [
+        
+        ActiveDetail::class=> [
+            ActiveDetailListener::class,
+        ],
+        ActiveFind::class=> [
+            ActiveFindListener::class,
+        ]
+    ];
+
+
     /**
      * Bootstrap services.
      *
@@ -25,6 +41,7 @@ class AbcChinaServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerRoute();
+        $this->regiterEvent();
     }
 
     /**
@@ -37,6 +54,17 @@ class AbcChinaServiceProvider extends ServiceProvider
         $this->commands($this->commands);
     }
     
+    
+    protected function regiterEvent(){
+        if(!count($this->listens)){
+            return false;
+        }
+        foreach ($this->listens as $event => $listeners) {
+            foreach ($listeners as $listener) {
+                Event::listen($event, $listener);
+            }
+        }
+    }
     protected function registerRoute(){
         $attributes = [
             'prefix'     => '/yh-web/',

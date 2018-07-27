@@ -4,9 +4,9 @@ namespace OkamiChen\TmsAbchina\Console\Command;
 
 use Illuminate\Console\Command;
 use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
-use Encore\Admin\Config\ConfigModel;
 use Exception;
+use OkamiChen\TmsAbchina\Event\ActiveFind;
+use OkamiChen\TmsAbchina\Event\ActiveDetail;
 
 class MonitorCommand extends Command
 {
@@ -22,7 +22,7 @@ class MonitorCommand extends Command
      *
      * @var string
      */
-    protected $description = '农行产品秒杀';
+    protected $description = '农行产品秒杀列表';
 
     
     private $totalPageCount;
@@ -54,35 +54,6 @@ class MonitorCommand extends Command
         }
     }
     
-    
-    /**
-     * 活动详情
-     */
-    protected function getActiveDetail($ruleNo=null, $actNo=null, $actType=null, $discType=null){
-        $config = [
-            'base_uri'  => 'https://enjoy.abchina.com',
-            'timeout'   => 3.0
-        ];
-        $client = new Client($config);
-        $option = [
-            'json' => [
-                "ruleNo" => $ruleNo,
-                "actNo" => $actNo,
-                "discType" => $discType,
-                "actType" => $actType,
-                "cityCode" => "289",
-                "longitude" => "121.364438",
-                "latitude" => "31.226119",
-                "pageNo" => "1",
-                "rowsPerPage" => "2"
-            ]
-        ];
-        $response   = $client->post('/yh-web/rights/rightsdetails', $option);
-        $result     = json_decode($response->getBody()->getContents(), true);
-        $name       = 'abchina:detail:'. array_get($result, 'result.yhDetail.actPicId');
-        cache()->put($name, $result['result'], 3600);
-        return $result['result'];
-    }
 
 
     /**
@@ -110,13 +81,16 @@ class MonitorCommand extends Command
         $result     = json_decode($response->getBody()->getContents(), true);
         $actives    = array_get($result, 'result.items');
         $headers    = [
-            '活动名称','活动时间'
+            '活动名称','活动编号','活动时间'
         ];
         $rows       = [];
         
         foreach ($actives as $key => $active) {
+            
+            event(new ActiveFind($active));
+            
             $this->active[] = $active;
-            $name   = 'abchina:active:'.$active['actPicId'];
+            $name   = 'abchina:active:'.$active['actNo'];
             cache()->put($name, $active, 3600);
 
             $detail = $this->getActiveDetail($active['ruleNo'], $active['actNo'], $active['actType'], $active['discType']);
@@ -129,11 +103,44 @@ class MonitorCommand extends Command
                 substr($detail['yhDetail']['secKillStTime'], 4, 2);
             $rows[] = [
                 $active['ruleName'],
+                $active['actNo'],
                 $time
             ];
         }
         $this->table($headers, $rows);
         return $actives;
+    }
+    
+    /**
+     * 活动详情
+     */
+    protected function getActiveDetail($ruleNo=null, $actNo=null, $actType=null, $discType=null){
+        $config = [
+            'base_uri'  => 'https://enjoy.abchina.com',
+            'timeout'   => 3.0
+        ];
+        $client = new Client($config);
+        $option = [
+            'json' => [
+                "ruleNo" => $ruleNo,
+                "actNo" => $actNo,
+                "discType" => $discType,
+                "actType" => $actType,
+                "cityCode" => "289",
+                "longitude" => "121.364438",
+                "latitude" => "31.226119",
+                "pageNo" => "1",
+                "rowsPerPage" => "2"
+            ]
+        ];
+        $response   = $client->post('/yh-web/rights/rightsdetails', $option);
+        $result     = json_decode($response->getBody()->getContents(), true);
+        
+        event(new ActiveDetail($result['result']));
+        
+        $name       = 'abchina:detail:'. array_get($result, 'result.yhDetail.actNo');
+        cache()->put($name, $result['result'], 3600);
+        return $result['result'];
     }
     
 }
