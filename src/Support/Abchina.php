@@ -19,7 +19,7 @@ class Abchina {
     public function notifyCookie($cookie, $post){
         $config = [
             'base_uri'  => 'https://enjoy.abchina.com',
-            'cookie'    => true,
+            'cookies'   => true,
             'timeout'   => 3.0
         ];
         $options = [
