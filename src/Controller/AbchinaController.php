@@ -32,6 +32,7 @@ class AbchinaController extends Controller {
             $value  = json_decode($config->value, true);
             $value['sessionId'] = request('sessionId');
             $config->value  = json_encode($value, JSON_UNESCAPED_UNICODE);
+            $config->updated_at = date('Y-m-d H:i:s');
             $config->save();
         }
         $logger = [
